@@ -1,0 +1,32 @@
+# k3d cluster create meucluster -p "80:30000@loadbalancer"
+apiVersion: apps/v1 # deployments -> consultado em api-resources
+kind: Deployment
+metadata:
+  name: deploywebpage
+spec:
+  selector:
+    matchLabels:
+      app: webpage
+  template:
+    metadata:
+      labels:
+        app: webpage
+    spec:
+      containers:
+        - name: 'conversaotemperaturawebpage'
+          image: gabrielrussoo/conversaotemp:v1
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicewebpage
+spec:
+  selector:
+    app: webpage
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30000
+  type: NodePort
